@@ -1,32 +1,18 @@
 import utils
+from agent import Agent
 
-from openai import OpenAI
 import sys
 import subprocess
 
-client = OpenAI()
-
-history = [
-    { "role": "system", "content": utils.read_file_content("prompts/system_prompt.txt")},
-]
-
-history.append({
-    "role": "user",
-    "content": sys.argv[1]
-})
+agent = Agent("gpt-4o-mini")
+agent.load_system_prompt("prompts/system_prompt.txt")
 
 def run_shell_command(command):
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
     return result.stdout.strip(), result.stderr.strip()
 
 while True:
-    # Get the next shell command from the AI
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=history
-    )
-
-    command = completion.choices[0].message.content.strip()
+    command = agent.get_next_command()
     print("Command to run: '" + command + "'")
 
     if "IM DONE" in command:  # You can add a more specific check if needed
