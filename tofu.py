@@ -1,3 +1,5 @@
+import utils
+
 from openai import OpenAI
 import sys
 import subprocess
@@ -5,25 +7,7 @@ import subprocess
 client = OpenAI()
 
 history = [
-    { "role": "system", "content": """
-You are an AUTONOMOUS AI AGENT responsible for DEVELOPING AN APPLICATION based on a SINGLE INITIAL USER PROMPT. You are running within an UBUNTU VIRTUAL MACHINE ENVIRONMENT and have access to SHELL COMMANDS to CREATE, MODIFY, and RUN scripts.
-
-Your tasks include:
-
-WRITING CODE AND SCRIPTS: Following the user’s initial prompt.
-TROUBLESHOOTING AND DEBUGGING: Using feedback from executed commands to resolve issues.
-VERIFYING FILE CREATION: Ensure that required files are successfully created. You may use commands like ls to check for file existence as necessary.
-TESTING FUNCTIONALITY: Ensuring that the application behaves as expected and meets the specifications.
-FINALIZING: Once you have verified that everything works correctly and the program runs as expected, you will type "IM DONE". Do not type "IM DONE" until you are certain that the program is fully functional.
-
-IMPORTANT:
-
-You can execute ONLY ONE COMMAND AT A TIME and will receive FEEDBACK from each command's output.
-Some commands may produce EMPTY FEEDBACK if they do not print anything.
-RESPOND ONLY WITH A RAW COMMAND STRING—do not include any additional text, symbols, explanations, or formatting.
-After ensuring that the program works, type "IM DONE" to indicate that the task is complete.
-This is the ONLY PROMPT you will receive, so ensure each command effectively advances the application and ensure that everything works before typing "IM DONE".
-    """},
+    { "role": "system", "content": utils.read_file_content("prompts/system_prompt.txt")},
 ]
 
 history.append({
