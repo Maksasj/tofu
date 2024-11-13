@@ -1,44 +1,26 @@
+import sys
 import utils
 from agent import Agent
 
-import sys
-import subprocess
+if __name__ == "__main__":
+    agent = Agent("gpt-4o-mini")
+    agent.load_system_prompt("prompts/system_prompt.txt")
+    agent.load_user_prompt(input())
 
-agent = Agent("gpt-4o-mini")
-agent.load_system_prompt("prompts/system_prompt.txt")
+    while True:
+        command = agent.get_next_command()
+        print("Command to run: '" + command + "'")
 
-def run_shell_command(command):
-    result = subprocess.run(command, shell=True, capture_output=True, text=True)
-    return result.stdout.strip(), result.stderr.strip()
-
-while True:
-    command = agent.get_next_command()
-    print("Command to run: '" + command + "'")
-
-    if "IM DONE" in command:  # You can add a more specific check if needed
+        if "IM DONE" in command:
             break
 
-    # Run the shell command
-    stdout, stderr = run_shell_command(command)
+        stdout, stderr = utils.run_shell_command(command)
+        
+        if stderr:
+            result = "FAILED, WITH ERROR '" + stderr + "'"
+            agent.save_command_result(result)
+        else:
+            result = "RUNNED SUCCESSFULLY, AND PRINTED '" + stdout + "'"
+            agent.save_command_result(result)
     
-    # Check for errors in the execution
-    if stderr:
-        result = "" + command + " - FAILED, WITH ERROR '" + stderr + "'"
-        print("    " + result)
-
-        history.append({
-            "role": "assistant",
-            "content": result
-        })
-    else:
-        result = "" + command + " - RUNNED SUCCESSFULLY, AND PRINTED '" + stdout + "'"
-        print("    " + result)
-
-        history.append({
-            "role": "assistant",
-            "content": result
-        })
-
-  
-    # Continue with the next iteration
-    sys.stdout.flush()
+        sys.stdout.flush()
